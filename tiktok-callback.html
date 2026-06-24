@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Magikid — TikTok OAuth callback</title>
+  <link rel="icon" type="image/png" sizes="1024x1024" href="magikid_1024x1024.png" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(120% 120% at 50% 0%, #fef3c7 0%, #fde68a 60%, #fcd34d 100%);
+      color: #1f2937; padding: 1.5rem;
+    }
+    .card {
+      background: #fff; max-width: 560px; width: 100%;
+      border-radius: 1rem; padding: 2rem; box-shadow: 0 10px 40px rgba(180,83,9,.18);
+      text-align: center;
+    }
+    h1 { color: #b45309; font-size: 1.4rem; margin: 0 0 .25rem; }
+    p { color: #6b7280; margin: .25rem 0 1.25rem; }
+    .code-box {
+      display: flex; gap: .5rem; align-items: stretch;
+    }
+    textarea {
+      flex: 1; font-family: ui-monospace, "SF Mono", Consolas, monospace;
+      font-size: .9rem; padding: .8rem; border: 1px solid #fcd34d; border-radius: .6rem;
+      resize: none; height: 90px; background: #fffbeb; color: #1f2937;
+    }
+    button {
+      border: 0; background: #b45309; color: #fff; font-weight: 600;
+      padding: 0 1.1rem; border-radius: .6rem; cursor: pointer; font-size: .95rem;
+    }
+    button:hover { background: #92400e; }
+    .ok { color: #15803d; font-weight: 600; }
+    .err { color: #b91c1c; font-weight: 600; }
+    .hint { font-size: .85rem; color: #9ca3af; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎬 Magikid — Autorisation TikTok</h1>
+    <p id="status">Lecture du code d'autorisation…</p>
+    <div class="code-box">
+      <textarea id="code" readonly placeholder="(aucun code dans l'URL)"></textarea>
+      <button id="copy">Copier</button>
+    </div>
+    <p class="hint">Copie ce code et colle-le dans le chat. Il est valable quelques minutes seulement.</p>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var code = params.get('code');
+      var error = params.get('error');
+      var state = params.get('state');
+      var statusEl = document.getElementById('status');
+      var codeEl = document.getElementById('code');
+
+      if (error) {
+        statusEl.innerHTML = '<span class="err">Erreur : ' + error + ' — ' + (params.get('error_description') || '') + '</span>';
+      } else if (code) {
+        statusEl.innerHTML = '<span class="ok">✓ Code reçu (state: ' + (state || '—') + ')</span>';
+        codeEl.value = code;
+      } else {
+        statusEl.innerHTML = '<span class="err">Aucun paramètre <code>code</code> dans l\'URL.</span>';
+      }
+
+      document.getElementById('copy').addEventListener('click', function () {
+        codeEl.select();
+        navigator.clipboard && navigator.clipboard.writeText(codeEl.value);
+        this.textContent = 'Copié ✓';
+      });
+    })();
+  </script>
+</body>
+</html>
