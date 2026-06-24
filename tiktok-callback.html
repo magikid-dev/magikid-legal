@@ -60,13 +60,22 @@
       var statusEl = document.getElementById('status');
       var codeEl = document.getElementById('code');
 
+      // textContent uniquement : les paramètres d'URL ne sont jamais interprétés comme du HTML (anti-XSS)
+      function setStatus(cls, text) {
+        statusEl.textContent = '';
+        var span = document.createElement('span');
+        span.className = cls;
+        span.textContent = text;
+        statusEl.appendChild(span);
+      }
+
       if (error) {
-        statusEl.innerHTML = '<span class="err">Erreur : ' + error + ' — ' + (params.get('error_description') || '') + '</span>';
+        setStatus('err', 'Erreur : ' + error + ' — ' + (params.get('error_description') || ''));
       } else if (code) {
-        statusEl.innerHTML = '<span class="ok">✓ Code reçu (state: ' + (state || '—') + ')</span>';
+        setStatus('ok', '✓ Code reçu (state: ' + (state || '—') + ')');
         codeEl.value = code;
       } else {
-        statusEl.innerHTML = '<span class="err">Aucun paramètre <code>code</code> dans l\'URL.</span>';
+        setStatus('err', "Aucun paramètre 'code' dans l'URL.");
       }
 
       document.getElementById('copy').addEventListener('click', function () {
