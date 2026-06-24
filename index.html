@@ -3,20 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Magikid — Contes africains pour enfants</title>
-  <meta name="description" content="Magikid génère et publie automatiquement des contes africains pour enfants sur TikTok et YouTube grâce à l'intelligence artificielle." />
+  <title>Magikid — Contes africains animés pour enfants</title>
+  <meta name="description" content="Magikid crée et publie automatiquement des contes africains animés pour les enfants (4-10 ans) sur YouTube et TikTok grâce à l'intelligence artificielle." />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" sizes="1024x1024" href="magikid_1024x1024.png" />
   <link rel="apple-touch-icon" href="magikid_1024x1024.png" />
+
+  <!-- Open Graph / partage social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Magikid — Contes africains animés pour enfants" />
+  <meta property="og:description" content="Des contes africains illustrés et narrés, créés et publiés par l'IA sur YouTube et TikTok." />
+  <meta property="og:image" content="magikid_1024x1024.png" />
+
   <style>
     :root {
       --primary: #f59e0b;
       --primary-dark: #b45309;
       --bg: #fffbeb;
+      --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
+      --yt: #ff0000;
+      --tt: #111111;
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -24,137 +35,292 @@
       background: var(--bg);
       line-height: 1.6;
     }
-    header {
-      padding: 2rem 1.5rem;
-      text-align: center;
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+
+    /* ---------- Barre de navigation ---------- */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 251, 235, 0.85);
+      backdrop-filter: saturate(180%) blur(10px);
+      border-bottom: 1px solid #fde68a;
     }
-    header h1 {
-      font-size: 2.75rem;
-      margin: 0 0 0.5rem;
+    .nav .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+    .nav .brand img { width: 36px; height: 36px; mix-blend-mode: multiply; }
+    .nav .links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      margin-left: 1.25rem;
+    }
+    .nav .links a:hover { color: var(--primary-dark); }
+    @media (max-width: 540px) { .nav .links { display: none; } }
+
+    /* ---------- Hero ---------- */
+    header.hero {
+      padding: 3.5rem 1.5rem 3rem;
+      text-align: center;
+      background: radial-gradient(120% 120% at 50% 0%, #fef3c7 0%, #fde68a 55%, #fcd34d 100%);
+    }
+    .hero img.logo {
+      width: 150px;
+      height: 150px;
+      margin-bottom: 1rem;
+      mix-blend-mode: multiply;
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+      margin: 0 0 0.75rem;
       color: var(--primary-dark);
     }
-    header p {
-      font-size: 1.15rem;
-      margin: 0;
+    .hero .tagline {
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      max-width: 620px;
+      margin: 0 auto 1.75rem;
       color: var(--text);
     }
-    .logo {
-      display: block;
-      margin: 0 auto 0.5rem;
-      width: 180px;
-      height: 180px;
-      mix-blend-mode: multiply;
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      justify-content: center;
     }
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.8rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      color: #fff;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     }
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem;
-    }
-    section {
-      margin-bottom: 2.5rem;
-    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); }
+    .btn svg { width: 22px; height: 22px; fill: currentColor; }
+    .btn-youtube { background: var(--yt); }
+    .btn-tiktok { background: var(--tt); }
+
+    /* ---------- Contenu ---------- */
+    main { max-width: 860px; margin: 0 auto; padding: 3rem 1.5rem; }
+    section { margin-bottom: 3.5rem; }
     h2 {
       color: var(--primary-dark);
-      margin-top: 0;
+      font-size: 1.65rem;
+      margin: 0 0 1rem;
+      text-align: center;
     }
+    section > p.lead {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+      color: var(--text);
+    }
+
     .features {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.25rem;
-      margin-top: 1.5rem;
+      margin-top: 2rem;
     }
     .feature {
-      background: #fff;
-      padding: 1.25rem;
-      border-radius: 0.75rem;
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 1rem;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f3e8c8;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .feature h3 {
-      margin: 0 0 0.5rem;
-      font-size: 1rem;
-      color: var(--primary-dark);
+    .feature:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(180, 83, 9, 0.12); }
+    .feature .emoji { font-size: 1.9rem; display: block; margin-bottom: 0.6rem; }
+    .feature h3 { margin: 0 0 0.4rem; font-size: 1.1rem; color: var(--primary-dark); }
+    .feature p { margin: 0; font-size: 0.95rem; color: var(--muted); }
+
+    /* ---------- Disponible sur ---------- */
+    .platforms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      margin-top: 2rem;
     }
-    .feature p {
-      margin: 0;
-      font-size: 0.95rem;
-      color: var(--muted);
+    .platform {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 260px;
+      padding: 1.1rem 1.4rem;
+      border-radius: 1rem;
+      background: var(--card);
+      border: 1px solid #f3e8c8;
+      text-decoration: none;
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }
+    .platform:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12); }
+    .platform .icon {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 0.75rem;
+      flex-shrink: 0;
+    }
+    .platform .icon svg { width: 28px; height: 28px; fill: #fff; }
+    .platform.yt:hover { border-color: var(--yt); }
+    .platform.yt .icon { background: var(--yt); }
+    .platform.tt:hover { border-color: var(--tt); }
+    .platform.tt .icon { background: var(--tt); }
+    .platform .label { display: flex; flex-direction: column; }
+    .platform .label strong { font-size: 1.05rem; }
+    .platform .label span { font-size: 0.88rem; color: var(--muted); }
+
+    /* ---------- Footer ---------- */
     footer {
       border-top: 1px solid #e5e7eb;
-      padding: 2rem 1.5rem;
+      padding: 2.5rem 1.5rem;
       text-align: center;
       color: var(--muted);
       font-size: 0.9rem;
+      background: #fffdf5;
     }
+    footer .footer-links { margin-bottom: 0.75rem; }
     footer a {
       color: var(--primary-dark);
       text-decoration: none;
-      margin: 0 0.5rem;
+      margin: 0 0.6rem;
     }
     footer a:hover { text-decoration: underline; }
+    footer .copy { margin: 0; }
   </style>
 </head>
 <body>
-  <header>
-    <img src="magikid_1024x1024.png" alt="Magikid" class="logo" />
-    <h1 class="sr-only">Magikid</h1>
-    <p>Contes africains pour enfants, générés et partagés par l'IA.</p>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a class="brand" href="#top">
+      <img src="magikid_1024x1024.png" alt="" />
+      Magikid
+    </a>
+    <div class="links">
+      <a href="#a-propos">À propos</a>
+      <a href="#disponible">Disponible sur</a>
+      <a href="mailto:magikid.dev@gmail.com">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <img src="magikid_1024x1024.png" alt="Logo Magikid" class="logo" />
+    <h1>Magikid — Contes africains animés pour enfants</h1>
+    <p class="tagline">
+      Des histoires inspirées du patrimoine africain, illustrées et narrées,
+      créées par l'intelligence artificielle et publiées chaque jour sur
+      YouTube et TikTok pour les enfants de 4 à 10 ans.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-youtube" href="https://www.youtube.com/@Magikid" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+        Regarder sur YouTube
+      </a>
+      <a class="btn btn-tiktok" href="https://www.tiktok.com/@magikid" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-1-2.8h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.27 0 .53.04.78.12V10.3a6 6 0 0 0-.78-.05A5.95 5.95 0 1 0 15.7 16.2V9.3a7.5 7.5 0 0 0 4.4 1.4V7.4a4.3 4.3 0 0 1-3.5-1.6z"/></svg>
+        Suivre sur TikTok
+      </a>
+    </div>
   </header>
 
   <main>
-    <section>
+    <!-- À propos -->
+    <section id="a-propos">
       <h2>À propos</h2>
-      <p>
-        Magikid est un projet automatisé qui crée des contes africains illustrés
-        et narrés pour les enfants, puis les publie sur TikTok et YouTube.
-        Notre mission&nbsp;: faire vivre la richesse des traditions orales
-        africaines dans un format moderne et accessible à tous.
+      <p class="lead">
+        Magikid est un studio automatisé qui fait vivre la richesse des traditions
+        orales africaines dans un format moderne et accessible. Chaque conte est
+        généré, illustré, narré puis publié automatiquement — pour transmettre la
+        culture africaine aux enfants, partout dans le monde.
       </p>
-    </section>
 
-    <section>
-      <h2>Ce que nous faisons</h2>
       <div class="features">
         <div class="feature">
+          <span class="emoji">✨</span>
           <h3>Contes générés par IA</h3>
-          <p>Des histoires inspirées du patrimoine africain, créées automatiquement.</p>
+          <p>Des histoires originales inspirées du patrimoine africain, créées automatiquement.</p>
         </div>
         <div class="feature">
-          <h3>Publication automatisée</h3>
-          <p>Diffusion régulière sur TikTok et YouTube.</p>
+          <span class="emoji">🎨</span>
+          <h3>Illustrés & narrés</h3>
+          <p>Visuels colorés et voix off chaleureuse pour une vraie expérience d'animation.</p>
         </div>
         <div class="feature">
-          <h3>Pour les enfants</h3>
+          <span class="emoji">📅</span>
+          <h3>Publication quotidienne</h3>
+          <p>De nouveaux épisodes diffusés chaque jour sur YouTube et TikTok.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">🧒</span>
+          <h3>Pour les 4-10 ans</h3>
           <p>Un contenu adapté, éducatif et culturellement enraciné.</p>
         </div>
       </div>
     </section>
 
-    <section>
+    <!-- Disponible sur -->
+    <section id="disponible">
+      <h2>Disponible sur</h2>
+      <p class="lead">Retrouvez tous les contes Magikid sur vos plateformes préférées.</p>
+      <div class="platforms">
+        <a class="platform yt" href="https://www.youtube.com/@Magikid" target="_blank" rel="noopener">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+          </span>
+          <span class="label"><strong>YouTube</strong><span>@Magikid</span></span>
+        </a>
+        <a class="platform tt" href="https://www.tiktok.com/@magikid" target="_blank" rel="noopener">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-1-2.8h-3.3v13.1a2.6 2.6 0 1 1-2.6-2.6c.27 0 .53.04.78.12V10.3a6 6 0 0 0-.78-.05A5.95 5.95 0 1 0 15.7 16.2V9.3a7.5 7.5 0 0 0 4.4 1.4V7.4a4.3 4.3 0 0 1-3.5-1.6z"/></svg>
+          </span>
+          <span class="label"><strong>TikTok</strong><span>@magikid</span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
       <h2>Contact</h2>
-      <p>
-        Pour toute question, écrivez-nous à
-        <a href="mailto:magikid.dev@gmail.com">magikid.dev@gmail.com</a>.
+      <p class="lead">
+        Une question, un partenariat&nbsp;? Écrivez-nous à
+        <a href="mailto:magikid.dev@gmail.com" style="color:var(--primary-dark);font-weight:600;">magikid.dev@gmail.com</a>.
       </p>
     </section>
   </main>
 
   <footer>
-    <a href="terms.html">Conditions d'utilisation</a> ·
-    <a href="privacy.html">Politique de confidentialité</a>
-    <p>&copy; 2026 Magikid</p>
+    <div class="footer-links">
+      <a href="terms.html">Conditions d'utilisation</a> ·
+      <a href="privacy.html">Politique de confidentialité</a>
+    </div>
+    <p class="copy">&copy; 2026 Magikid · Contes africains animés par l'IA</p>
   </footer>
+
 </body>
 </html>
